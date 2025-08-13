@@ -56,3 +56,11 @@ footer_part_aligned*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Local-only tracked files
+mapping.csv
+roadmap.py
+roadmap_level_1.py
+roadmap_level_1_old.py
+roadmap_level_2.py
+student_alex_status.csv
