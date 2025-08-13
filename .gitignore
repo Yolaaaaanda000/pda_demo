@@ -41,7 +41,6 @@ ehthumbs.db
 Thumbs.db
 
 # Generated files
-*.png
 *.pdf
 *.dot
 knowledge_graph_part*
