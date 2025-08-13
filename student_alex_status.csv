@@ -1,0 +1,33 @@
+﻿division_code,Division,topic_code,Topic,mastery_score,Status,estimated_hours
+a,Algebra,misa,Miscellaneous algebra,0.59,表现不错 (Good but needs improvement),5.8
+a,Algebra,complex,Complex number and complex plane,0.88,已掌握 (Mastered),4.1
+a,Algebra,trig,Trigonometry function,0.77,表现不错 (Good but needs improvement),4.6
+a,Algebra,function,Special function and functional equation,0.6,表现不错 (Good but needs improvement),5.7
+a,Algebra,log,Logarithm,0.63,表现不错 (Good but needs improvement),5.5
+a,Algebra,exp,Exponent,0.63,表现不错 (Good but needs improvement),5.5
+a,Algebra,equation,Inequality and equation,0.43,表现不错 (Good but needs improvement),7.5
+a,Algebra,poly,Polynomial,0.98,已掌握 (Mastered),3.7
+a,Algebra,seq,Sequence,0.7,表现不错 (Good but needs improvement),5.0
+a,Algebra,stats,Statistics,0.75,表现不错 (Good but needs improvement),4.7
+g,Geometry,circle,Circle,0.31,需要复习 (Needs review),9.8
+g,Geometry,angle,Angle and trigonometry,0.69,表现不错 (Good but needs improvement),5.1
+g,Geometry,coor,Coordinate geometry,0.63,表现不错 (Good but needs improvement),5.5
+g,Geometry,length,Length,0.53,表现不错 (Good but needs improvement),6.3
+g,Geometry,3d,3D geometry,0.27,需要复习 (Needs review),10.8
+s,Number Theory,base,Base representation,0.16,需要复习 (Needs review),18.5
+s,Number Theory,mod,Modular arithmetic,0.09,还未开始 (Not started),25.3
+s,Number Theory,factor,Factor,0.26,需要复习 (Needs review),13.3
+s,Number Theory,div,Divisibility,0.23,需要复习 (Needs review),14.5
+s,Number Theory,lcm,Least common multiple,0.19,需要复习 (Needs review),16.6
+s,Number Theory,digit,Digit representation,0.28,需要复习 (Needs review),12.6
+c,Counting,Markov,Probability states diagram(Markov chain),0.04,还未开始 (Not started),34.3
+c,Counting,Recursion,Recursion,0.0,还未开始 (Not started),48.0
+c,Counting,logic,Logic,0.11,需要复习 (Needs review),22.9
+c,Counting,uniform,Probability in uniform distribution,0.14,需要复习 (Needs review),20.0
+c,Counting,geom,Geometric counting,0.24,需要复习 (Needs review),14.1
+c,Counting,game,Winning strategy and other game problems,0.0,还未开始 (Not started),48.0
+c,Counting,Expectation,Expectation,0.15,需要复习 (Needs review),19.2
+c,Counting,count,Counting,0.18,需要复习 (Needs review),17.1
+c,Counting,prob,Probability,0.01,还未开始 (Not started),43.6
+g,Geometry,area,Area,0.69,表现不错 (Good but needs improvement),5.1
+g,Geometry,sim,Similar Triangle,0.37,需要复习 (Needs review),8.5
