@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematics Ability Map - Linear Acceleration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #02AFB1;
+            --primary-dark: #008A8C;
+            --primary-light: #E6FFFA;
+            --text-dark: #2D3748;
+            --text-light: #5A6A85;
+            --bg-color: #F7FAFC;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --opportunity-color: #10B981;
+        }
+
+        body {
+            font-family: 'Inter', 'Helvetica Neue', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .main-container { max-width: 1200px; margin: 0 auto; }
+
+        .header-banner {
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(2, 175, 177, 0.2);
+            margin-bottom: 30px;
+        }
+        .header-banner h1 { margin: 0; font-size: 32px; font-weight: 700; }
+        .header-banner p { margin: 10px 0 0; font-size: 18px; opacity: 0.9; }
+
+        .student-info-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: -50px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 2;
+        }
+        .info-item { display: flex; align-items: center; gap: 15px; }
+        .info-item svg { color: var(--primary-color); flex-shrink: 0; }
+        .info-item-text h4 { margin: 0; font-size: 14px; color: var(--text-light); font-weight: 500; }
+        .info-item-text p { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-dark); }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 0;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title svg { margin-right: 12px; color: var(--primary-color); }
+
+        .timeline-item .connector {
+            position: absolute;
+            top: 20px;
+            left: 19px;
+            width: 2px;
+            height: calc(100% + 2rem);
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        .timeline-item:last-child .connector { display: none; }
+        .module-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(2, 175, 177, 0.1);
+        }
+        .timeline-badge {
+            background-color: var(--primary-color);
+            z-index: 10;
+        }
+        .status-dot {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        .status-excellent { background-color: #10B981; }
+        .status-in-progress { background-color: #F59E0B; }
+        .status-not-started { background-color: #9CA3AF; }
+        .status-behind { background-color: #EF4444; }
+        .module-relation {
+            font-size: 0.75rem;
+            color: #6b7280;
+            padding: 0.25rem 0.5rem;
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-backdrop.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-backdrop.visible .modal-content {
+            transform: scale(1);
+        }
+        .view-toggle button.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .view-toggle button { transition: all 0.3s ease; }
+        .ai-suggestion-module {
+            border-style: dashed;
+            border-color: #8B5CF6;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        .current-module {
+            border-color: var(--border-color);
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Header Banner -->
+        <div class="header-banner">
+            <h1>Dual-View Mathematics Ability Map</h1>
+            <p>Customized Path for Alex (Progress Ahead - Linear Acceleration)</p>
+        </div>
+
+        <!-- Student Info Bar -->
+        <div class="student-info-bar">
+            <div class="info-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div class="info-item-text"><h4>Student Name</h4><p>Alex Chen</p></div>
+            </div>
+            <div class="info-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <div class="info-item-text"><h4>Current Stage</h4><p>9th Grade</p></div>
+            </div>
+            <div class="info-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M12 3l0 2"></path><path d="M3 12l2 0"></path><path d="M21 12l-2 0"></path><path d="M12 21l0 -2"></path></svg>
+                <div class="info-item-text"><h4>Learning Goal</h4><p>Initialized advanced STEM pathway.</p></div>
+            </div>
+        </div>
+
+        <!-- Top Row: Progress Summary and Assessment -->
+        <div class="card">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Progress Summary -->
+                <div class="md:border-r md:border-gray-300 md:pr-8">
+                    <h2 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+                        Progress Summary
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-600">Foundation Completion</span>
+                                <span class="text-sm font-semibold text-green-600">100%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-600">Current Stage Progress</span>
+                                <span class="text-sm font-semibold text-yellow-600">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-yellow-500 h-2.5 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-600">Overall Path Progress</span>
+                                <span class="text-sm font-semibold text-blue-600">30%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: 30%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Assessment -->
+                <div class="md:pl-8">
+                    <h2 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path><path d="M12 2L2 7l10 5 10-5L12 2z"></path></svg>
+                        Ability Assessment
+                    </h2>
+                    <ul class="list-none space-y-3 text-gray-700">
+                        <li class="flex items-center justify-between"><div class="flex items-center"><svg class="w-4 h-4 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><strong>Algebraic Operations & Abstraction:</strong></div><span>Excellent</span></li>
+                        <li class="flex items-center justify-between"><div class="flex items-center"><svg class="w-4 h-4 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><strong>Function Concept Understanding:</strong></div><span>Excellent</span></li>
+                        <li class="flex items-center justify-between"><div class="flex items-center"><svg class="w-4 h-4 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><strong>Geometric Logic Reasoning:</strong></div><span>Excellent</span></li>
+                        <li class="flex items-center justify-between"><div class="flex items-center"><svg class="w-4 h-4 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><strong>Word Problem Modeling:</strong></div><span>Average</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-6 gap-6">
+            <!-- Left Column: Narrow -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- AI Opportunity Notice Card -->
+                <div class="card">
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
+                        <p class="font-bold">Learning Path Opportunity</p>
+                        <p class="text-sm">Congratulations! You have completed the geometry module ahead of schedule. The system has accelerated your overall learning progress and moved the next core module forward to the current stage.</p>
+                    </div>
+                </div>
+
+                <!-- Path Opportunity Selection Card -->
+                <div class="card">
+                    <h2 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Path Opportunity Selection
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">The system has accelerated the overall learning progress based on your advanced progress. You can accept this suggestion or re-plan your long-term goals.</p>
+                    <div class="space-y-3">
+                        <button class="w-full bg-[var(--opportunity-color)] text-white font-semibold py-2 px-4 rounded-lg transition hover:opacity-90">Accept Acceleration Suggestion</button>
+                        <button class="w-full bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg transition hover:bg-gray-300" onclick="openModal()">Re-plan Learning Goals</button>
+                    </div>
+                </div>
+
+                <!-- Path Adjustment Log Card -->
+                <div class="card">
+                    <h2 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Path Adjustment Log
+                    </h2>
+                    <div class="space-y-4 text-sm">
+                        <div class="log-item pt-3 border-t border-gray-100">
+                            <p class="font-semibold text-green-600">2025-11-22 (Today)</p>
+                            <p class="text-gray-600"><strong>Event:</strong> <span class="font-bold text-green-700">Progress Ahead!</span></p>
+                            <p class="text-gray-600"><strong>Reason:</strong> "Logical Reasoning & Geometric Proofs" module has been completed ahead of schedule with high quality.</p>
+                            <p class="text-gray-600"><strong>Action:</strong> Moved "Advanced Function Families & Transformations" module forward to 9th grade learning.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Wide -->
+            <div class="lg:col-span-4">
+                <!-- Main Content Card: Ability Map & Course Path -->
+                <div class="card">
+                    <!-- View Toggle -->
+                    <div class="view-toggle mb-6 p-1 bg-gray-200 rounded-xl flex max-w-md mx-auto">
+                        <button id="btn-ability-view" class="w-1/2 p-2 rounded-lg font-semibold text-gray-700 active" onclick="switchView('ability')">Ability Module View</button>
+                        <button id="btn-course-view" class="w-1/2 p-2 rounded-lg font-semibold text-gray-700" onclick="switchView('course')">Course View</button>
+                    </div>
+
+                    <!-- Ability Module View -->
+                    <div id="ability-view">
+                        <div class="space-y-8">
+                        <!-- Middle School Foundation -->
+                        <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">I</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">Middle School Foundation (8th Grade)</h3><p class="text-sm text-gray-500 mb-4">Goal: Complete Algebra I core foundation for advanced STEM pathway.</p><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-excellent"></span><h4 class="font-semibold">Algebraic Core Abilities</h4></div><div class="module-relation">Related Course: Algebra I</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-excellent"></span><h4 class="font-semibold">Linear & Quadratic Functions</h4></div><div class="module-relation">Related Course: Algebra I</div></div></div></div></div>
+
+                        <!-- 9th Grade Abilities -->
+                        <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">II</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">High School Core (9th Grade)</h3><p class="text-sm text-gray-500 mb-4">Goal: Master Geometry Honors for advanced mathematical thinking.</p>
+                        <div class="module-card border bg-white rounded-lg p-4 mt-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center"><span class="status-dot status-excellent"></span><h4 class="font-semibold">Geometric Proofs & Logic</h4></div>
+                                <span class="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">Completed Early</span>
+                            </div>
+                            <div class="module-relation">Related Course: Geometry Honors</div>
+                        </div>
+                        <!-- Accelerated Module -->
+                        <div class="module-card border-2 current-module rounded-lg p-4 mt-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center"><span class="status-dot status-in-progress"></span><h4 class="font-semibold">Advanced Function Theory</h4></div>
+                                <span class="text-xs font-normal text-gray-500">Moved forward from 10th grade by AI suggestion</span>
+                            </div>
+                            <div class="module-relation">Related Course: Algebra II</div>
+                        </div>
+                        <div class="module-card border bg-white rounded-lg p-4 mt-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Complex Numbers & Polynomials</h4></div><div class="module-relation">Related Course: Algebra II</div></div>
+                        </div></div></div>
+
+                        <!-- 10th Grade Abilities -->
+                        <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">III</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">Advanced Preparation (10th Grade)</h3><p class="text-sm text-gray-500 mb-4">Goal: Complete Algebra II and Pre-Calculus core content.</p><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Advanced Trigonometry</h4></div><div class="module-relation">Related Course: Pre-Calculus</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Vector Analysis & Polar Coordinates</h4></div><div class="module-relation">Related Course: Pre-Calculus</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Limits & Continuity</h4></div><div class="module-relation">Related Course: Pre-Calculus</div></div></div></div></div>
+
+                        <!-- 11th Grade Abilities -->
+                        <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">IV</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">AP Calculus BC (11th Grade)</h3><p class="text-sm text-gray-500 mb-4">Complete calculus mastery for advanced placement.</p><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Differential Calculus Mastery</h4></div><div class="module-relation">Related Course: AP Calculus BC</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Integral Calculus & Applications</h4></div><div class="module-relation">Related Course: AP Calculus BC</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Series & Convergence Analysis</h4></div><div class="module-relation">Related Course: AP Calculus BC</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Parametric & Polar Calculus</h4></div><div class="module-relation">Related Course: AP Calculus BC</div></div></div></div></div>
+
+                        <!-- 12th Grade Abilities -->
+                        <div class="timeline-item relative"><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">V</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">Post-AP Advanced (12th Grade)</h3><p class="text-sm text-gray-500 mb-4">Advanced STEM courses for university preparation.</p><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Multivariable Calculus</h4></div><div class="module-relation">Related Course: Multivariable Calculus</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">Linear Algebra</h4></div><div class="module-relation">Related Course: Linear Algebra</div></div><div class="module-card border bg-white rounded-lg p-4 mb-4"><div class="flex items-center"><span class="status-dot status-not-started"></span><h4 class="font-semibold">AP Statistics</h4></div><div class="module-relation">Related Course: AP Statistics</div></div></div></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Course View -->
+                    <div id="course-view" class="hidden">
+                        <div class="space-y-8">
+                            <!-- 8th Grade -->
+                            <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 bg-gray-500 text-white rounded-full flex items-center justify-center font-bold z-10">8</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">8th Grade: Algebra I</h3><div class="mt-2 space-y-2"><div class="flex items-center"><span class="status-dot status-excellent"></span><span>Algebraic Core Abilities</span></div><div class="flex items-center"><span class="status-dot status-excellent"></span><span>Linear & Quadratic Functions</span></div></div></div></div></div>
+                            <!-- 9th Grade -->
+                            <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">9</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">9th Grade: Geometry Honors</h3><div class="mt-4"><h4 class="font-semibold text-gray-700">Geometry Honors</h4><div class="mt-2 space-y-2 pl-4 border-l-2 border-gray-200"><div class="flex items-center"><span class="status-dot status-excellent"></span><span>Geometric Proofs & Logic</span></div><div class="flex items-center"><span class="status-dot status-in-progress"></span><span>Advanced Geometric Properties</span></div></div></div><div class="mt-4"><h4 class="font-semibold text-gray-700">Algebra II</h4><div class="mt-2 space-y-2 pl-4 border-l-2 border-gray-200"><div class="flex items-center"><span class="status-dot status-in-progress"></span><span class="font-semibold">Advanced Function Theory (Moved Forward)</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Complex Numbers & Polynomials</span></div></div></div></div></div></div>
+                            <!-- 10th Grade -->
+                            <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">10</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">10th Grade: Pre-Calculus</h3><div class="mt-2 space-y-2"><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Advanced Trigonometry</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Vector Analysis & Polar Coordinates</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Limits & Continuity</span></div></div></div></div></div>
+                            <!-- 11th Grade -->
+                            <div class="timeline-item relative"><div class="connector"></div><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">11</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">11th Grade: AP Calculus BC</h3><div class="mt-2 space-y-2"><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Differential Calculus Mastery</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Integral Calculus & Applications</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Series & Convergence Analysis</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Parametric & Polar Calculus</span></div></div></div></div></div>
+                            <!-- 12th Grade -->
+                            <div class="timeline-item relative"><div class="flex items-start"><div class="flex-shrink-0 w-10 h-10 timeline-badge text-white rounded-full flex items-center justify-center font-bold">12</div><div class="ml-6 flex-grow"><h3 class="text-lg font-semibold text-gray-800">12th Grade: Post-AP Advanced</h3><div class="mt-2 space-y-2"><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Multivariable Calculus</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>Linear Algebra</span></div><div class="flex items-center"><span class="status-dot status-not-started"></span><span>AP Statistics</span></div></div></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for re-planning -->
+    <div id="replan-modal" class="modal-backdrop">
+        <div class="modal-content max-w-lg w-full">
+            <h2 class="text-2xl font-bold mb-4">Re-plan Learning Goals</h2>
+            <p class="text-gray-600 mb-6">After adjusting learning goals, the system will generate a completely new learning path that better suits your choices. Please select your new goal:</p>
+            <div class="space-y-3">
+                <button class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200"><strong>Goal Unchanged:</strong> Optimize path, still complete BC in 11th grade</button>
+                <button class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200"><strong>Adjust Goal:</strong> Complete AP Calculus AB in 11th grade</button>
+                <button class="w-full text-left p-3 bg-gray-100 rounded-lg hover:bg-gray-200"><strong>Adjust Goal:</strong> Complete AP Calculus BC in 12th grade</button>
+            </div>
+            <div class="mt-6 text-right">
+                <button class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg mr-2" onclick="closeModal()">Cancel</button>
+                <button class="bg-[var(--primary-color)] text-white font-semibold py-2 px-6 rounded-lg">Confirm and Re-plan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('replan-modal');
+
+        function openModal() {
+            modal.classList.add('visible');
+        }
+
+        function closeModal() {
+            modal.classList.remove('visible');
+        }
+
+        // Close modal if backdrop is clicked
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        function switchView(view) {
+            const abilityView = document.getElementById('ability-view');
+            const courseView = document.getElementById('course-view');
+            const btnAbility = document.getElementById('btn-ability-view');
+            const btnCourse = document.getElementById('btn-course-view');
+
+            if (view === 'ability') {
+                abilityView.classList.remove('hidden');
+                courseView.classList.add('hidden');
+                btnAbility.classList.add('active');
+                btnCourse.classList.remove('active');
+            } else {
+                abilityView.classList.add('hidden');
+                courseView.classList.remove('hidden');
+                btnAbility.classList.remove('active');
+                btnCourse.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

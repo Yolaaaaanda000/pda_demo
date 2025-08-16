@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Path Dynamic Cycle Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Theme Styles */
+        body {
+            font-family: 'Inter', 'Helvetica Neue', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #F4F6FA;
+        }
+        :root {
+            --theme-color: #02AFB1;
+            --connector-color: #D1D5DB;
+        }
+
+        /* Stepper Navigation Styles */
+        .stepper-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; position: relative; }
+        .stepper-nav::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background-color: var(--connector-color); transform: translateY(-50%); z-index: 1; }
+        .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+        .step-circle { width: 3rem; height: 3rem; border-radius: 9999px; border: 2px solid var(--connector-color); background-color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: #6B7280; transition: all 0.3s ease; }
+        .step-label { margin-top: 0.75rem; font-weight: 600; color: #4B5563; text-align: center; }
+        .step.active .step-circle { background-color: var(--theme-color); border-color: var(--theme-color); color: white; box-shadow: 0 0 15px rgba(2, 175, 177, 0.4); }
+        .step.active .step-label { color: var(--theme-color); }
+        
+        /* Logic Diagram Styles */
+        .logic-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .logic-box { background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; border-radius: 0.5rem; text-align: center; font-weight: 500; }
+        .arrow { color: #9ca3af; margin: 0.25rem 0; font-size: 1.25rem; line-height: 1; text-align: center; }
+
+        /* Embedded Iframe Container Styles */
+        .iframe-container { display: none; margin-top: 2rem; }
+        .iframe-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background-color: #374151; color: white; border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; }
+        .iframe-header h3 { font-weight: 600; }
+        .iframe-controls button { background-color: #4B5563; border: none; color: white; cursor: pointer; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: background-color 0.2s; }
+        .iframe-controls button:hover { background-color: #6B7280; }
+        .embedded-iframe { width: 100%; height: 70vh; border: 1px solid #D1D5DB; border-top: none; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+
+        /* Fullscreen & Modal Styles */
+        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 50; }
+        .modal-backdrop.visible { display: flex; }
+        .modal-content { width: 95%; height: 95%; background-color: white; border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; }
+        .monitor-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">AI-Driven Learning Path Dynamic Cycle</h1>
+            <p class="text-gray-600 mt-2">Below shows the complete logic of how the system works. Click on each stage button to load the corresponding detailed page examples.</p>
+            
+            <button onclick="openArchitectureModal()" class="mt-4 bg-white text-[var(--theme-color)] font-semibold py-2 px-4 border border-[var(--theme-color)] rounded-lg hover:bg-teal-50 transition">
+                View System Architecture Diagram
+            </button>
+        </header>
+
+        <!-- Stepper Navigation to control Iframe -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-8">
+            <div class="stepper-nav">
+                <div id="step-plan" class="step"></div>
+                <div id="step-monitor" class="step"></div>
+                <div id="step-warn" class="step"></div>
+                <div id="step-adapt" class="step"></div>
+            </div>
+        </div>
+
+        <!-- Static Display of All Logic Diagrams -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+            <!-- Card 1: Plan -->
+            <div class="logic-card">
+                <h2 class="text-lg font-bold text-gray-900 mb-3">Stage 1: Plan</h2>
+                <div class="space-y-2 mb-4">
+                    <div class="logic-box text-sm"><span class="font-bold">Input</span>: Goals & Ability Assessment</div>
+                    <div class="arrow">↓</div>
+                    <div class="logic-box text-sm"><span class="font-bold">Process</span>: AI Path Planning Engine</div>
+                    <div class="arrow">↓</div>
+                    <div class="logic-box text-sm cursor-pointer hover:bg-blue-100 transition-colors bg-blue-50 border border-blue-200" onclick="handleStepClick('plan')">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">Output: </span>Personalized Learning Map
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-xs mt-auto">The system generates an optimal learning path as an "ideal blueprint" based on the student's goals and current abilities.</p>
+            </div>
+            <!-- Card 2: Monitor -->
+            <div class="logic-card">
+                <h2 class="text-lg font-bold text-gray-900 mb-3">Stage 2: Monitor</h2>
+                <div class="logic-box text-sm mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Core Monitoring Logic</h3>
+                    <p class="text-xs text-gray-600">Cyclic comparison: Actual Progress vs Planned Path </p>
+                    <p class="mt-2 text-xs">When <span class="font-bold">significant deviation</span> is detected → Trigger risk assessment</p>
+                </div>
+                <p class="text-gray-600 text-xs mt-auto">The system continuously tracks learning data in the background, comparing the student's actual progress with the planned blueprint in real-time.</p>
+            </div>
+            <!-- Card 3: Dynamic Adjustment -->
+            <div class="logic-card">
+                <h2 class="text-lg font-bold text-gray-900 mb-3">Stage 3: Dynamic Adjustment</h2>
+                
+                <div class="space-y-3 mb-4">
+                    <div class="logic-box text-sm"><strong>Event:</strong> Progress Assessment</div>
+                    <div class="arrow">↓</div>
+                    
+                    <!-- 重新设计两个子路径 -->
+                    <div class="grid grid-cols-1 gap-3">
+                        <!-- 路径A: 进度滞后 -->
+                        <div class="border border-gray-300 rounded-lg p-2">
+                            <div class="logic-box text-sm mb-2">
+                                <span class="font-bold">Progress Lag</span>
+                            </div>
+                            <div class="arrow">↓</div>
+                            <div class="logic-box text-xs cursor-pointer hover:bg-red-100 transition-colors bg-red-50 border border-red-200" onclick="handleRiskWarningClick()">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span>⚠️ Risk Warning & Supplementary Learning</span>
+                                    <svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 路径B: 进度超前 -->
+                        <div class="border border-gray-300 rounded-lg p-2">
+                            <div class="logic-box text-sm mb-2">
+                                <span class="font-bold">Progress Ahead</span>
+                            </div>
+                            <div class="arrow">↓</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="logic-box text-xs cursor-pointer hover:bg-blue-100 transition-colors bg-blue-50 border border-blue-200 flex flex-col justify-center items-center min-h-[50px]" onclick="handleProgressAheadClick('enrichment')">
+                                    <div class="flex items-center justify-center space-x-1">
+                                        <span>📚 Learning Extension</span>
+                                        <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="logic-box text-xs cursor-pointer hover:bg-purple-100 transition-colors bg-purple-50 border border-purple-200 flex flex-col justify-center items-center min-h-[50px]" onclick="handleProgressAheadClick('accelerate')">
+                                    <div class="flex items-center justify-center space-x-1">
+                                        <span>⚡ Linear Acceleration</span>
+                                        <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-xs mt-auto">The system provides intelligent adjustment suggestions for both positive and negative scenarios based on monitoring results.</p>
+            </div>
+            <!-- Card 4: Adapt -->
+            <div class="logic-card">
+                <h2 class="text-lg font-bold text-gray-900 mb-3">Stage 4: Adapt</h2>
+                <div class="space-y-2 mb-4">
+                    <div class="logic-box text-sm"><strong>User Decision:</strong> Accept Suggestion / Adjust Goals</div>
+                    <div class="arrow">↓</div>
+                    <div class="logic-box text-sm cursor-pointer hover:bg-green-100 transition-colors bg-green-50 border border-green-200" onclick="handleStepClick('adapt')">
+                        <div class="flex items-center justify-between">
+                            <strong>System Action:</strong> Update Learning Path
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="arrow">↓</div>
+                    <div class="logic-box text-sm"><span class="font-bold">Complete Loop:</span><br>Return to "Monitor" Stage</div>
+                </div>
+                <p class="text-gray-600 text-xs mt-auto">The system dynamically adjusts the learning path based on user decisions, completes the loop and starts a new round of monitoring.</p>
+            </div>
+        </div>
+
+        <!-- Global Iframe Container for Detail Views -->
+        <div id="iframe-container" class="iframe-container">
+            <div class="iframe-header">
+                <h3 id="iframe-title">Detailed View</h3>
+                <div class="iframe-controls space-x-3">
+                    <button onclick="expandToFullscreen()">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1v4m0 0h-4m4-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v-4m0 0h-4m4 4l-5-5"></path></svg>
+                        <span>Fullscreen View</span>
+                    </button>
+                    <button onclick="openInNewTab()">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        <span>Open in New Tab</span>
+                    </button>
+                </div>
+            </div>
+            <iframe id="embedded-iframe" class="embedded-iframe" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="fullscreen-modal" class="modal-backdrop"></div>
+    <div id="architecture-modal" class="modal-backdrop"></div>
+    <div id="monitor-modal" class="modal-backdrop">
+        <div class="monitor-modal-content">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Background Monitoring Stage</h2>
+            <p class="text-gray-600">This is a continuously running background logic that is transparent to users,<br>no need to view detailed pages.</p>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATA & DOM ELEMENTS ---
+        const iframeContainer = document.getElementById('iframe-container');
+        const embeddedIframe = document.getElementById('embedded-iframe');
+        const iframeTitle = document.getElementById('iframe-title');
+        const fullscreenModal = document.getElementById('fullscreen-modal');
+        const architectureModal = document.getElementById('architecture-modal');
+        const monitorModal = document.getElementById('monitor-modal');
+        
+        let fullscreenIframe;
+        let fullscreenTitle;
+        
+        const pageMap = {
+            plan: { url: 'student_ability_map.html', title: 'Initial Learning Path Map' },
+            warn: { url: null, title: 'AI Dynamic Adjustment Suggestions' },
+            adapt: { url: 'ai_suggest_after.html', title: 'Updated Learning Path' },
+            monitor: { url: null, title: 'Background Monitoring Logic' },
+            enrichment: { url: 'ai_suggest_enrichment.html', title: 'Opportunity-Based Extension' },
+            accelerate: { url: 'ai_suggest_accelerate.html', title: 'Linear Acceleration Path' },
+            riskWarning: { url: 'ai_suggest.html', title: 'AI Dynamic Adjustment Suggestions' }
+        };
+        let activeStep = null;
+        let currentUrl = null;
+
+        // --- CORE FUNCTIONS ---
+        function handleStepClick(stepName) {
+            // Deactivate previous step
+            if (activeStep) {
+                document.getElementById(`step-${activeStep}`).classList.remove('active');
+            }
+            
+            // Activate current step
+            const stepElement = document.getElementById(`step-${stepName}`);
+            if (stepElement) {
+                stepElement.classList.add('active');
+            }
+            activeStep = stepName;
+
+            const pageInfo = pageMap[stepName];
+            if (pageInfo && pageInfo.url) {
+                currentUrl = pageInfo.url;
+                embeddedIframe.src = currentUrl;
+                iframeTitle.textContent = pageInfo.title;
+                if(fullscreenTitle) fullscreenTitle.textContent = pageInfo.title;
+                iframeContainer.style.display = 'block';
+                
+                // 自动滚动到iframe部分
+                setTimeout(() => {
+                    iframeContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }, 100);
+            } else {
+                currentUrl = null;
+                iframeContainer.style.display = 'none';
+                // Show modal for monitor step
+                if (stepName === 'monitor') {
+                    monitorModal.classList.add('visible');
+                    setTimeout(() => monitorModal.classList.remove('visible'), 2500);
+                }
+                // For ahead step, show options
+                if (stepName === 'ahead') {
+                    showAheadOptions();
+                }
+                // For adapt-ahead step, show message
+                if (stepName === 'adapt-ahead') {
+                    showNoPageMessage();
+                }
+            }
+        }
+
+        function expandToFullscreen() {
+            if (!currentUrl) return;
+            fullscreenIframe.src = currentUrl;
+            fullscreenModal.classList.add('visible');
+        }
+
+        function openInNewTab() {
+            if (!currentUrl) return;
+            window.open(currentUrl, '_blank');
+        }
+        
+        function closeFullscreen() {
+            fullscreenModal.classList.remove('visible');
+            fullscreenIframe.src = 'about:blank';
+        }
+
+        function openArchitectureModal() {
+            architectureModal.classList.add('visible');
+        }
+
+        function closeArchitectureModal() {
+            architectureModal.classList.remove('visible');
+        }
+
+        function handleProgressAheadClick(type) {
+            const pageInfo = pageMap[type];
+            if (pageInfo && pageInfo.url) {
+                currentUrl = pageInfo.url;
+                embeddedIframe.src = currentUrl;
+                iframeTitle.textContent = pageInfo.title;
+                if(fullscreenTitle) fullscreenTitle.textContent = pageInfo.title;
+                iframeContainer.style.display = 'block';
+                
+                // 激活超前步骤
+                if (activeStep) {
+                    document.getElementById(`step-${activeStep}`).classList.remove('active');
+                }
+                document.getElementById('step-ahead').classList.add('active');
+                activeStep = 'ahead';
+                
+                // 自动滚动到iframe部分
+                setTimeout(() => {
+                    iframeContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }, 100);
+            }
+        }
+
+        function handleRiskWarningClick() {
+            const pageInfo = pageMap.riskWarning;
+            if (pageInfo && pageInfo.url) {
+                currentUrl = pageInfo.url;
+                embeddedIframe.src = currentUrl;
+                iframeTitle.textContent = pageInfo.title;
+                if(fullscreenTitle) fullscreenTitle.textContent = pageInfo.title;
+                iframeContainer.style.display = 'block';
+                
+                // 激活第三阶段（Dynamic Adjustment）
+                if (activeStep) {
+                    document.getElementById(`step-${activeStep}`).classList.remove('active');
+                }
+                document.getElementById('step-warn').classList.add('active');
+                activeStep = 'warn';
+                
+                // 自动滚动到iframe部分
+                setTimeout(() => {
+                    iframeContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }, 100);
+            }
+        }
+
+        // --- INITIALIZATION ---
+        function initialize() {
+            // Populate stepper html
+            const steps = ['plan', 'monitor', 'warn', 'adapt'];
+            const labels = {'plan': 'Plan', 'monitor': 'Monitor', 'warn': 'Dynamic Adjustment', 'adapt': 'Adapt'};
+            steps.forEach((step, index) => {
+                document.getElementById(`step-${step}`).innerHTML = `<div class="step-circle">${index+1}</div><div class="step-label">${labels[step]}</div>`;
+            });
+
+            // Populate modals' innerHTML first
+            document.getElementById('fullscreen-modal').innerHTML = `<div class="modal-content"><div class="bg-gray-800 text-white p-2 flex justify-between items-center"><span id="fullscreen-title" class="font-semibold ml-2"></span><button onclick="closeFullscreen()" class="text-gray-300 hover:text-white px-3 py-1">&times; Close</button></div><iframe id="fullscreen-iframe" class="w-full h-full border-none" src=""></iframe></div>`;
+            document.getElementById('architecture-modal').innerHTML = `<div class="modal-content bg-gray-50" style="max-width: 1000px; height: auto; max-height: 90vh;"><div class="bg-gray-800 text-white p-2 flex justify-between items-center flex-shrink-0"><span class="font-semibold ml-2">System Core Workflow Architecture</span><button onclick="closeArchitectureModal()" class="text-gray-300 hover:text-white px-3 py-1">&times; Close</button></div><div class="p-4 overflow-auto"><img src="architecture.png" alt="AI Planning System Architecture"></div></div>`;
+            
+            // NOW, assign variables for elements inside the modals
+            fullscreenIframe = document.getElementById('fullscreen-iframe');
+            fullscreenTitle = document.getElementById('fullscreen-title');
+
+            // Set initial state: show Plan iframe by default
+            handleStepClick('plan');
+        }
+        
+        window.onload = initialize;
+    </script>
+</body>
+</html>
